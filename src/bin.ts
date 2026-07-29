@@ -21,6 +21,7 @@ const { values } = parseArgs({
   }
 });
 const pageFilePattern = /(?:^|[/\\])(page|layout)\.(?:jsx?|tsx?)$/;
+const routeFilePattern = /(?:^|[/\\])(route)\.(?:jsx?|tsx?)$/;
 const keyIgnorancePattern = /^\(.+?\)$/;
 const environmentFilePattern = /^\.env(\..+)?$/;
 
@@ -80,7 +81,7 @@ async function main():Promise<void>{
           return pageFileChunk[0] === otherFileChunk[0].replace("page.", "layout.");
         })) continue;
         R = generatePageDefinition(getKey(relativePath), v);
-      }else{
+      }else if(routeFilePattern.test(relativePath)){
         R = generateEndpointDefinition(getKey(relativePath), v);
       }
       if(!R) continue;

@@ -22,6 +22,7 @@ import { NextResponse } from "next/server";
 declare module "@daldalso/next-typed-route"{
   export interface NextEndpointTable{
     'GET /api':Endpoint<unknown, void>;
+    'POST /api':Endpoint<unknown, void>;
   }
 }`
   );
