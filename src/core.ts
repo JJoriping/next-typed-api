@@ -2,13 +2,19 @@ import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 import { log, warning } from "@daldalso/logger";
 import type { SourceFile } from "ts-morph";
-import { Project, SyntaxKind } from "ts-morph";
+import { Project, SyntaxKind, TypeFormatFlags } from "ts-morph";
 import dotenv from "dotenv";
 import { dynamicSegmentPatterns } from "./constants.js";
 
 const appRouterKeywords = [ "GET", "HEAD", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ];
 // NOTE https://github.com/dsherret/ts-morph/issues/644
 const typeTextPattern = /\b(NextTypedPage|NextTypedLayout|NextTypedRoute)\b/;
+const typeFormatFlags = TypeFormatFlags.UseTypeOfFunction
+  | TypeFormatFlags.NoTruncation
+  | TypeFormatFlags.UseFullyQualifiedType
+  | TypeFormatFlags.WriteTypeArgumentsOfSignature
+  | TypeFormatFlags.InTypeAlias
+;
 
 let project:Project;
 
@@ -126,7 +132,7 @@ export function generateEndpointDefinition(key:string, path:string):string|undef
       const [ requestType, responseType ] = type.getAliasTypeArguments();
       const requestSuffix = parametersType === "unknown" ? "" : `&{ params: ${parametersType} }`;
 
-      R.push(`    '${k} /${key}':Endpoint<${requestType ? requestType.getText() : "unknown"}${requestSuffix}, ${responseType ? responseType.getText() : "void"}>;`);
+      R.push(`    '${k} /${key}':Endpoint<${requestType ? requestType.getText(undefined, typeFormatFlags) : "unknown"}${requestSuffix}, ${responseType ? responseType.getText() : "void"}>;`);
       accepted = true;
     }
   }
